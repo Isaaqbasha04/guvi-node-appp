@@ -3,11 +3,10 @@
 
 import express from "express";
 import  { MongoClient } from "mongodb";
+import dotenv from "dotenv";
 
-
-
+dotenv.config();
 const app = express()
-
 const PORT = 4000;
 
 const movies=[
@@ -79,7 +78,11 @@ const movies=[
     
 ];
 
-const MONGO_URL= 'mongodb://localhost'
+app.use(express.json());
+
+// const MONGO_URL= 'mongodb://localhost'
+
+const MONGO_URL=process.env.MONGO_URL;
 
 async function createConnection(){
   const client = new MongoClient(MONGO_URL);
@@ -94,7 +97,14 @@ app.get("/", function (request, response) {
   response.send("Hello WOrld 🍚🍚🍚")
 });
 
-app.get("/movies", function (request, response) {
+//movies
+
+app.get("/movies",  async function (request, response) {
+  //db.movies.find({})
+ 
+  //cursor- pagination
+  const movies = await client.db("guvi-db").collection("movies").find({}).toArray();
+  console.log("Movies : " + movies);
     response.send(movies)
   });
 
@@ -111,6 +121,19 @@ app.get("/movies", function (request, response) {
 
     console.log(movie);
     movie ? response.send(movie) : response.status(404).send({msg: "Movie not foiund"});
+  });
+
+  //middleware (inbuilts) 
+
+  app.post("/movies", express.json(), async function (request, response) {
+
+    const data = request.body;
+    console.log(data);
+
+    //db.movies.insertMnay
+
+    const result= await client.db("guvi-db").collection("movies").insertMany(data);
+    response.send(result);
   });
 
 app.listen(PORT, ()=>console.log(`App started in ${PORT}`));
