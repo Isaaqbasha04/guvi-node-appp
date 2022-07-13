@@ -4,10 +4,16 @@
 import express from "express";
 import  { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import {moviesRouter} from "./routes/movies.js";
+import cors from "cors";
 
 dotenv.config();
+
+
 const app = express()
 const PORT = process.env.PORT;
+
+app.use(cors());
 
 const movies=[
   {
@@ -91,92 +97,13 @@ async function createConnection(){
   return client;
 }
 
-const client =await createConnection();
+export const client =await createConnection();
 
 app.get("/", function (request, response) {
   response.send("Hello WOrld 🍚🍚🍚")
 });
 
-//movies
 
-app.get("/movies",  async function (request, response) {
-  //db.movies.find({})
-
-  if(request.query.rating){
-    request.query.rating = + request.query.rating;
-  }
-  console.log(request.query);
-
-  //cursor- pagination
-  const movies = await client
-  .db("guvi-db")
-  .collection("movies")
-  .find(request.query)
-  .toArray();
-  // console.log("Movies : " + movies);
-    response.send(movies)
-  });
-
-  app.get("/movies/:id", async function (request, response) {
-   
-    const {id} = request.params;
-    console.log(request.params,id);
-
-    //db.movies.findOne({id:101})
-
-    // const movie = movies.find((mv) => mv.id===id);
-
-    const movie = await client.db("guvi-db").collection("movies").findOne({id:id});
-
-    console.log(movie);
-    movie ? response.send(movie) : response.status(404).send({msg: "Movie not foiund"});
-  });
-
-  //middleware (inbuilts) 
-
-  app.post("/movies", express.json(), async function (request, response) {
-
-    const data = request.body;
-    console.log(data);
-
-    //db.movies.insertMnay
-
-    const result= await client.db("guvi-db").collection("movies").insertMany(data);
-    response.send(result);
-  });
-
-  app.delete("/movies/:id", async function (request, response) {
-   
-    const {id} = request.params;
-    console.log(request.params,id);
-
-    const movie= await client
-    .db("guvi-db")
-    .collection("movies")
-    .deleteOne({ id:id});
-
-    console.log(movie);
-
-    movie ? response.send(movie) : response.status(404)
-    .send({msg : "Movie not found"})
-  });
-
-  app.put("/movies/:id", async function (request, response) {
-   
-    const {id} = request.params;
-    console.log(request.params,id);
-    const data = request.body;
-
-    //db.movies.UpdateOne({id: "101"} {$set : data})
-
-    // const movie = movies.find((mv) => mv.id===id);
-
-    const result= await client
-    .db("guvi-db")
-    .collection("movies")
-    .updateOne({ id:id}, {$set:data});
-    
-    response.send(result);
-  });
+app.use("/movies", moviesRouter)
 
 app.listen(PORT, ()=>console.log(`App started in ${PORT}`));
