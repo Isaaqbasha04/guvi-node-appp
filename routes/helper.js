@@ -1,16 +1,17 @@
 import { client } from "../index.js";
+import { ObjectId } from "mongodb";
 
 export async function updateMovieById(id, data) {
     return await client
         .db("guvi-db")
         .collection("movies")
-        .updateOne({ id: id }, { $set: data });
+        .updateOne({  _id: ObjectId(id) }, { $set: data });
 }
 export async function deleteMoviesById(id) {
     return await client
         .db("guvi-db")
         .collection("movies")
-        .deleteOne({ id: id });
+        .deleteOne({  _id: ObjectId(id) });
 }
 export async function CreateMovies(data) {
     return await client
@@ -22,7 +23,7 @@ export async function getMovieById(id) {
     return await client
         .db("guvi-db")
         .collection("movies")
-        .findOne({ id: id });
+        .findOne({ _id: ObjectId(id) });
 }
 export async function getAllMovies(request) {
     return await client
