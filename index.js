@@ -5,7 +5,9 @@ import express from "express";
 import  { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import {moviesRouter} from "./routes/movies.js";
+import {usersRouter} from "./routes/users.js";
 import cors from "cors";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -86,6 +88,7 @@ const movies=[
 
 app.use(express.json());
 
+
 // const MONGO_URL= 'mongodb://localhost'
 
 const MONGO_URL=process.env.MONGO_URL;
@@ -104,6 +107,68 @@ app.get("/", function (request, response) {
 });
 
 
-app.use("/movies", moviesRouter)
+app.use("/movies", moviesRouter);
+app.use("/users", usersRouter);
+
+// const mobiles = [
+//   {
+//     model: "OnePlus 9 5G",
+//     img: "https://m.media-amazon.com/images/I/61fy+u9uqPL._SX679_.jpg",
+//     company: "Oneplus"
+//   },
+//   {
+//     model: "Iphone 13 mini",
+//     img:
+//       "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-mini-blue-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1645572315986",
+//     company: "Apple"
+//   },
+//   {
+//     model: "Samsung s21 ultra",
+//     img: "https://m.media-amazon.com/images/I/81kfA-GtWwL._SY606_.jpg",
+//     company: "Samsung"
+//   },
+//   {
+//     model: "Xiomi mi 11",
+//     img: "https://m.media-amazon.com/images/I/51K4vNxMAhS._AC_SX522_.jpg",
+//     company: "Xiomi"
+//   }
+// ];
+
+//mobiles
+
+app.get("/mobiles", async function (request, response) {
+  //db.mobiles.find({})
+
+  const mobiles=await client
+  .db('guvi-db')
+  .collection('mobiles')
+  .find({})
+  .toArray();
+
+  response.send(mobiles);
+});
+
+app.post("/mobiles", async function (request, response) {
+  const data=request.body;
+  console.log(data);
+//db.mobiles/insertMany(data)
+
+  // const result=await client
+  // .db('guvi-db')
+  // .collection('mobiles')
+  // .insertMany(data);
+
+  response.send(mobiles);
+});
+
 
 app.listen(PORT, ()=>console.log(`App started in ${PORT}`));
+
+
+// async function genHashedPassword(password){
+//   const NO_OF_ROUNDS=10;
+//   const salt = await bcrypt.genSalt(NO_OF_ROUNDS);
+//   const hashedPassword = await bcrypt.hash(password,salt);
+// }
+
+// genHashedPassword("Isaaq@52");

@@ -19,12 +19,29 @@ export async function CreateMovies(data) {
         .collection("movies")
         .insertMany(data);
 }
+
+export async function createUser(data) {
+    return await client
+        .db("guvi-db")
+        .collection("users")
+        .insertOne(data);
+}
+
 export async function getMovieById(id) {
     return await client
         .db("guvi-db")
         .collection("movies")
         .findOne({ _id: ObjectId(id) });
 }
+export async function getUserByName(username) {
+    console.log("the id is",id);
+
+    return await client
+        .db("guvi-db")
+        .collection("users")
+        .findOne({ username:username });
+}
+
 export async function getAllMovies(request) {
     return await client
         .db("guvi-db")

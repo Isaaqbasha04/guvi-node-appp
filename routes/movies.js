@@ -1,6 +1,7 @@
 
 //movies
 import express from "express";
+import { auth } from "../middleware/auth.js"
 import { getAllMovies, 
     getMovieById, 
     CreateMovies,
@@ -8,7 +9,7 @@ import { getAllMovies,
       updateMovieById } from "./helper.js";
 const router=express.Router();
 
-router.get("/",  async function (request, response) {
+router.get("/",auth,  async function (request, response) {
     //db.movies.find({})
   
     if(request.query.rating){
@@ -22,7 +23,7 @@ router.get("/",  async function (request, response) {
       response.send(movies)
     });
   
-    router.get("/:id", async function (request, response) {
+    router.get("/:id",auth, async function (request, response) {
      
       const {id} = request.params;
       console.log(request.params,id);
@@ -50,7 +51,7 @@ router.get("/",  async function (request, response) {
       response.send(result);
     });
   
-    router.delete("/:id", async function (request, response) {
+    router.delete("/:id",auth,  async function (request, response) {
      
       const {id} = request.params;
       console.log(request.params,id);
